@@ -9,7 +9,7 @@ This repository contains the official codebase accompanying my PhD thesis:
 ## Author
 
 Hayastan Avetisyan  
-PhD Candidate, :contentReference[oaicite:0]{index=0}
+PhD Candidate
 
 ---
 
