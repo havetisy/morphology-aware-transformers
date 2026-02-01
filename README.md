@@ -36,10 +36,10 @@ If you use this code or datasets, please cite the corresponding papers:
 
 ```bibtex
 @inproceedings{avetisyan2025verbcraft,
-  title     = {VerbCraft: Morphologically-Aware Armenian Text Generation Using LLMs in Low-Resource Settings},
-  author    = {Avetisyan, Hayastan and Karasavva, Christina and Broneske, David},
-  booktitle = {RESOURCEFUL},
-  year      = {2025}
+  title={VerbCraft: Morphologically-Aware Armenian Text Generation Using LLMs in Low-Resource Settings},
+  author={Avetisyan, Hayastan and Broneske, David},
+  booktitle={The Third Workshop on Resources and Representations for Under-Resourced Languages and Domains (RESOURCEFUL 2025)},
+  pages={111},
+  year={2025}
 }
-
 
