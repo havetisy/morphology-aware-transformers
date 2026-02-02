@@ -79,6 +79,14 @@ If you use this code or datasets, please cite the corresponding papers:
   year      = {2025},
   publisher = {IEEE}
 }
+
+@inproceedings{avetisyan2021identifying,
+  title={Identifying and understanding game-framing in online news: BERT and fine-grained linguistic features},
+  author={Avetisyan, Hayastan and Broneske, David},
+  booktitle={Proceedings of the 4th International Conference on Natural Language and Speech Processing (ICNLSP 2021)},
+  pages={95--107},
+  year={2021}
+}
 ```
 
 
