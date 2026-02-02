@@ -9,7 +9,7 @@ This repository contains the official codebase accompanying my PhD thesis:
 ## Author
 
 Hayastan Avetisyan  
-PhD Candidate
+PhD Candidate, Otto-von-Guericke University Magdeburg (OVGU), Faculty of Computer Science
 
 ---
 
@@ -27,6 +27,16 @@ Armenian verb morphology generation and prediction using explicit morphological 
 
 ### MorphCraft
 Armenian and Greek noun & verb morphology with switchable injection methods.
+
+## Related Previous Codebases
+
+Earlier implementations associated with parts of this PhD research:
+
+Humor generation experiments (Laughing Out Loud):
+https://github.com/DZHW-AI4SS/Laughing-Out-Loud-Exploring-AI-Generated-and-Human-Generated-Humor
+
+German occupation coding (KldB classification):
+https://github.com/DZHW-AI/German_Occupation_Coding_KldB
 
 ## Citation
 
@@ -52,4 +62,6 @@ If you use this code or datasets, please cite the corresponding papers:
   year      = {2025},
   publisher = {IEEE}
 }
+```
+
 
