@@ -62,14 +62,6 @@ If you use this code or datasets, please cite the corresponding papers:
 
 
 ```bibtex
-@inproceedings{avetisyan2025verbcraft,
-  title     = {VerbCraft: Morphologically-Aware Armenian Text Generation Using LLMs in Low-Resource Settings},
-  author    = {Avetisyan, Hayastan and Broneske, David},
-  booktitle = {Proceedings of the Third Workshop on Resources and Representations for Under-Resourced Languages and Domains (RESOURCEFUL 2025)},
-  pages     = {111},
-  year      = {2025}
-}
-
 
 @inproceedings{avetisyan2025morphcraft,
   title     = {MorphCraft: Morphology-Aware Transformers for Armenian and Greek},
@@ -78,6 +70,14 @@ If you use this code or datasets, please cite the corresponding papers:
   pages     = {1--6},
   year      = {2025},
   publisher = {IEEE}
+}
+
+@inproceedings{avetisyan2025verbcraft,
+  title     = {VerbCraft: Morphologically-Aware Armenian Text Generation Using LLMs in Low-Resource Settings},
+  author    = {Avetisyan, Hayastan and Broneske, David},
+  booktitle = {Proceedings of the Third Workshop on Resources and Representations for Under-Resourced Languages and Domains (RESOURCEFUL 2025)},
+  pages     = {111},
+  year      = {2025}
 }
 
 @inproceedings{avetisyan2021identifying,
