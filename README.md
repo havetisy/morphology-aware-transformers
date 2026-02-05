@@ -15,8 +15,9 @@ PhD Candidate, Otto-von-Guericke University Magdeburg (OVGU), Faculty of Compute
 
 ## Overview
 
-This repository hosts experimental pipelines and models for morphology-aware transformer architectures in low-resource, morphologically rich languages, with a focus on Armenian and Greek.
+This repository hosts experimental pipelines and models for morphology-aware transformer architectures in low-resource, morphologically rich languages, with a primary focus on Armenian and Greek.  
 
+The projects explore data-centric and architecture-level strategies for injecting explicit linguistic structure into pretrained transformer models, combining expert-annotated resources, synthetic datasets, and Universal Dependencies treebanks.
 
 ---
 
@@ -24,45 +25,66 @@ This repository hosts experimental pipelines and models for morphology-aware tra
 
 ### MorphCraft
 
-Morphology-aware transformers for Armenian and Greek noun and verb bundle prediction under low-resource conditions.  
+Morphology-aware transformers for Armenian and Greek noun and verb bundle prediction under low-resource conditions.
+
 MorphCraft provides a unified experimental framework comparing multiple morphology injection strategies—token-level tags, prompt-based conditioning, multitask feature heads, and a lightweight feature projector—on both Universal Dependencies treebanks and expert-validated synthetic datasets. The work shows that explicit morphological supervision consistently improves exact bundle accuracy and per-feature F1, especially for large feature bundles and long-tail labels, offering a scalable architecture for morphologically rich languages.
+
+---
 
 ### VerbCraft
 
-Morphology-aware Armenian verb generation using an mBART-50 backbone augmented with explicit morphological classifiers.  
+Morphology-aware Armenian verb generation using an mBART-50 backbone augmented with explicit morphological classifiers.
+
 VerbCraft integrates auxiliary prediction heads for tense, aspect, mood, voice, person, and number, enabling linguistically grounded verb generation in low-resource settings. The project includes expert-validated synthetic Armenian verb datasets created with LLMs and human-in-the-loop correction, and demonstrates substantial gains in morphological accuracy on rare and irregular forms, prioritizing grammatical precision over surface fluency.
+
+---
+
+### Framing & BERTology
+
+Data-centric issue vs. game framing classification in political news using BERT augmented with explicit linguistic knowledge.
+
+This project investigates how deep linguistic features—covering word classes, grammatical categories (tense, aspect, mood, voice), semantic frames (FrameNet), negation, and discourse markers—can be integrated into pretrained transformer models. Experiments fine-tune BERT on a human-annotated corpus of news paragraphs labeled for issue/game framing, comparing baseline text-only models against variants enriched with linguistically motivated phrases.
+
+In a second experimental setup, the BERT tokenizer and embedding matrix are explicitly extended with domain-specific framing expressions, enabling direct vocabulary injection alongside input-level feature augmentation. Results show that both linguistic phrase integration and tokenizer-level vocabulary expansion improve framing detection accuracy, demonstrating the benefits of data-centric linguistic supervision for transformer-based models.
+
+---
 
 ### Issue & Game Framing
 
-Computational detection of issue vs. game framing in political news using BERT and fine-grained linguistic features.  
-This project includes a human-annotated corpus of news paragraphs labeled for issue–game framing, enriched with multi-level linguistic annotations (syntactic, semantic, pragmatic), and experiments fine-tuning BERT for binary frame classification. The work provides both quantitative evaluation and qualitative analysis of linguistic cues, such as competition metaphors, evaluative language, subjectivity markers, and discourse features.
+Computational detection of issue vs. game framing in political news using BERT and fine-grained linguistic features.
 
+This project includes a human-annotated corpus of news paragraphs labeled for issue–game framing, enriched with multi-level linguistic annotations (syntactic, semantic, pragmatic), and experiments fine-tuning BERT for binary frame classification. The work provides both quantitative evaluation and qualitative analysis of linguistic cues such as competition metaphors, evaluative language, subjectivity markers, and discourse features.
+
+---
 
 ## Related Previous Codebases
 
 Earlier implementations associated with parts of this PhD research:
 
 ### AI-Generated vs Human-Generated Humor
-Comparative modeling of AI-generated and human-generated humor using transformer-based classifiers and linguistic feature analysis.
+
+Comparative modeling of AI-generated and human-generated humor using transformer-based classifiers and linguistic feature analysis.  
 Includes human-annotated datasets (funniness and originality), RoBERTa fine-tuning, and source attribution experiments to study stylistic and structural differences between AI and human humor.
 
 https://github.com/DZHW-AI4SS/Laughing-Out-Loud-Exploring-AI-Generated-and-Human-Generated-Humor
 
+---
+
 ### Automated Occupation Coding (German KldB)
 
 Transformer-based automated occupation coding using hierarchical features.
+
 Applies BERT and GPT-3 to German job titles and descriptions, incorporating the hierarchical structure of the KldB classification system to enable fine-grained multi-level occupation prediction and significantly outperform classical ML baselines.
 
 https://github.com/DZHW-AI/German_Occupation_Coding_KldB
+
+---
 
 ## Citation
 
 If you use this code or datasets, please cite the corresponding papers:
 
-
-
 ```bibtex
-
 @inproceedings{avetisyan2025morphcraft,
   title     = {MorphCraft: Morphology-Aware Transformers for Armenian and Greek},
   author    = {Avetisyan, Hayastan and Karasavva, Christina and Broneske, David},
@@ -80,13 +102,19 @@ If you use this code or datasets, please cite the corresponding papers:
   year      = {2025}
 }
 
-@inproceedings{avetisyan2021identifying,
-  title={Identifying and understanding game-framing in online news: BERT and fine-grained linguistic features},
-  author={Avetisyan, Hayastan and Broneske, David},
-  booktitle={Proceedings of the 4th International Conference on Natural Language and Speech Processing (ICNLSP 2021)},
-  pages={95--107},
-  year={2021}
+@inproceedings{avetisyan2023framing,
+  title     = {Framing and BERTology: A Data-Centric Approach to Integration of Linguistic Features into Transformer-Based Pre-trained Language Models},
+  author    = {Avetisyan, Hayastan and Safikhani, Parisa and Broneske, David},
+  booktitle = {Intelligent Systems Conference},
+  pages     = {81--90},
+  year      = {2023},
+  organization = {Springer}
 }
-```
 
-
+@inproceedings{avetisyan2021identifying,
+  title     = {Identifying and understanding game-framing in online news: BERT and fine-grained linguistic features},
+  author    = {Avetisyan, Hayastan and Broneske, David},
+  booktitle = {Proceedings of the 4th International Conference on Natural Language and Speech Processing (ICNLSP 2021)},
+  pages     = {95--107},
+  year      = {2021}
+}
