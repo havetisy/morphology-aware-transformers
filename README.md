@@ -41,11 +41,9 @@ VerbCraft integrates auxiliary prediction heads for tense, aspect, mood, voice, 
 
 ### Framing & BERTology
 
-Data-centric issue vs. game framing classification in political news using BERT augmented with explicit linguistic knowledge.
+Data-centric issue vs. game framing classification in political news using BERT with explicit linguistic supervision.  
 
-This project investigates how deep linguistic features—covering word classes, grammatical categories (tense, aspect, mood, voice), semantic frames (FrameNet), negation, and discourse markers—can be integrated into pretrained transformer models. Experiments fine-tune BERT on a human-annotated corpus of news paragraphs labeled for issue/game framing, comparing baseline text-only models against variants enriched with linguistically motivated phrases.
-
-In a second experimental setup, the BERT tokenizer and embedding matrix are explicitly extended with domain-specific framing expressions, enabling direct vocabulary injection alongside input-level feature augmentation. Results show that both linguistic phrase integration and tokenizer-level vocabulary expansion improve framing detection accuracy, demonstrating the benefits of data-centric linguistic supervision for transformer-based models.
+This project compares baseline BERT models against variants enriched with linguistically motivated phrases and domain-specific framing vocabulary on a human-annotated corpus of news paragraphs. In addition to input-level feature injection, the BERT tokenizer and embeddings are extended with framing expressions, showing that both linguistic phrase integration and vocabulary expansion improve framing detection accuracy.
 
 ---
 
