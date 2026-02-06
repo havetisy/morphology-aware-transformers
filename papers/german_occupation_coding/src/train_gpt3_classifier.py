@@ -1,37 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-German Occupation Coding via Custom Transformer
-================================================
-
-Implements a custom Transformer architecture from scratch for automatic
-occupation coding using the KldB-2010 classification system.
-
-Architecture:
-- Token + Position Embeddings (256-dim)
-- 2 Transformer Blocks
-- Multi-Head Attention (2 heads)
-- Feed-Forward Networks
-- Dense Classification Layer
-
-Training Strategy:
-- 5-Fold Cross Validation
-- Evaluates: Balanced Accuracy, MCC, F1 Score
-- Confusion Matrix Analysis
-
-Performance:
-- Large dataset (427k samples): ~94-96% balanced accuracy
-- Competitive with BERT on large-scale data
-- Smaller model size (~10M parameters vs BERT's 110M)
-
-Requirements:
-- TensorFlow 2.x
-- scikit-learn
-- pandas, numpy, matplotlib, seaborn
-
-Author: DZHW (German Centre for Higher Education Research and Science Studies)
-"""
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
