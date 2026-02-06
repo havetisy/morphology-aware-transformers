@@ -1,31 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-German Occupation Coding via BERT
-===================================
-
-Fine-tunes German BERT (deepset/gbert-base) for automatic occupation coding
-using the KldB-2010 (Klassifikation der Berufe) classification system.
-
-Model: deepset/gbert-base
-- Pre-trained on German Wikipedia, Open Subtitles, ParaCrawl
-- 12 transformer layers, 768 hidden dimensions
-- 110M parameters
-
-Performance:
-- 1st digit (10 classes): ~95-98% F1 score
-- 3rd digit (140 classes): ~90-94% F1 score
-- 5th digit (37k classes): ~85-92% F1 score
-
-Requirements:
-- PyTorch
-- Transformers (HuggingFace)
-- scikit-learn
-- pandas, numpy, tqdm
-
-Author: DZHW (German Centre for Higher Education Research and Science Studies)
-"""
-
 import torch
 import pandas as pd
 import numpy as np
