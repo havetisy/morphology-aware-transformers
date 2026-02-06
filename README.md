@@ -23,6 +23,8 @@ The projects explore data-centric and architecture-level strategies for injectin
 
 ## Included Projects
 
+For methodological details, dataset construction, evaluation protocols, and full experimental results, please refer to the corresponding papers listed in the Citation section below.
+
 ### MorphCraft
 
 Morphology-aware transformers for Armenian and Greek noun and verb bundle prediction under low-resource conditions.
