@@ -1,32 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-KldB Data Preprocessing and Enrichment
-=======================================
-
-This script preprocesses occupation data and enriches it with official
-KldB-2010 (Klassifikation der Berufe) descriptions from the German Federal
-Employment Agency (Bundesagentur für Arbeit).
-
-Steps:
-1. Load raw occupation data
-2. Standardize KldB codes (add leading zeros, extract digit levels)
-3. Load official KldB taxonomy
-4. Match and enrich data with literal occupation descriptions
-5. Save enriched dataset
-
-Input Files:
-- data.csv: Raw occupation data (columns: occupation, kldb)
-- KldB_2010-DE-2019-02-14-Gliederung.csv: Official KldB taxonomy
-  (Download from: https://statistik.arbeitsagentur.de)
-
-Output Files:
-- cleaneddata.csv: Intermediate cleaned data
-- result.csv: Matched results with descriptions
-- data_including_jobdescription_and_Features.csv: Final enriched dataset
-
-Author: DZHW (German Centre for Higher Education Research and Science Studies)
-"""
 
 import pandas as pd
 import csv
