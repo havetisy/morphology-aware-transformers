@@ -47,6 +47,14 @@ This project compares baseline BERT models against variants enriched with lingui
 
 ---
 
+### Automated Occupation Coding (German KldB)
+
+Transformer-based automated occupation coding using hierarchical features.
+
+Applies BERT and GPT-3 to German job titles and descriptions, incorporating the hierarchical structure of the KldB classification system to enable fine-grained multi-level occupation prediction and significantly outperform classical ML baselines.
+
+---
+
 ### Issue & Game Framing
 
 Computational detection of issue vs. game framing in political news using BERT and fine-grained linguistic features.
@@ -54,6 +62,7 @@ Computational detection of issue vs. game framing in political news using BERT a
 This project includes a human-annotated corpus of news paragraphs labeled for issue–game framing, enriched with multi-level linguistic annotations (syntactic, semantic, pragmatic), and experiments fine-tuning BERT for binary frame classification. The work provides both quantitative evaluation and qualitative analysis of linguistic cues such as competition metaphors, evaluative language, subjectivity markers, and discourse features.
 
 ---
+
 
 ## Related Previous Codebases
 
@@ -65,16 +74,6 @@ Comparative modeling of AI-generated and human-generated humor using transformer
 Includes human-annotated datasets (funniness and originality), RoBERTa fine-tuning, and source attribution experiments to study stylistic and structural differences between AI and human humor.
 
 https://github.com/DZHW-AI4SS/Laughing-Out-Loud-Exploring-AI-Generated-and-Human-Generated-Humor
-
----
-
-### Automated Occupation Coding (German KldB)
-
-Transformer-based automated occupation coding using hierarchical features.
-
-Applies BERT and GPT-3 to German job titles and descriptions, incorporating the hierarchical structure of the KldB classification system to enable fine-grained multi-level occupation prediction and significantly outperform classical ML baselines.
-
-https://github.com/DZHW-AI/German_Occupation_Coding_KldB
 
 ---
 
@@ -107,6 +106,17 @@ If you use this code or datasets, please cite the corresponding papers:
   pages     = {81--90},
   year      = {2023},
   organization = {Springer}
+}
+
+@article{safikhani2023automated,
+  title={Automated occupation coding with hierarchical features: A data-centric approach to classification with pre-trained language models},
+  author={Safikhani, Parisa and Avetisyan, Hayastan and F{\"o}ste-Eggers, Dennis and Broneske, David},
+  journal={Discover Artificial Intelligence},
+  volume={3},
+  number={1},
+  pages={6},
+  year={2023},
+  publisher={Springer}
 }
 
 @inproceedings{avetisyan2021identifying,
