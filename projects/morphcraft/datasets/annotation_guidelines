@@ -1,0 +1,1149 @@
+# Morphology Annotation Guidelines
+## Armenian and Greek Nouns & Verbs
+
+**Version:** 2.0  
+**Date:** February 2026  
+**Authors:** Hayastan Avetisyan, Christina Karasavva  
+**Purpose:** Expert validation of ChatGPT-generated morphological annotations for low-resource NLP
+
+---
+
+## Table of Contents
+
+1. [Overview](#overview)
+2. [General Principles](#general-principles)
+3. [Armenian Noun Annotation](#armenian-noun-annotation)
+4. [Greek Noun Annotation](#greek-noun-annotation)
+5. [Greek Verb Annotation](#greek-verb-annotation)
+6. [Quality Control Procedures](#quality-control-procedures)
+7. [Common Pitfalls and Solutions](#common-pitfalls-and-solutions)
+8. [Annotation Workflow](#annotation-workflow)
+
+---
+
+## 1. Overview
+
+### 1.1 Purpose
+
+These guidelines support the creation of expert-validated, feature-complete morphological datasets for:
+- **Armenian:** Eastern Armenian nouns
+- **Greek:** Modern Greek nouns and verbs
+
+The datasets complement Universal Dependencies (UD) by providing:
+- Rich feature schemas (9-12 attributes vs. UD's 3-7)
+- Explicit marking of linguistic properties sparse/absent in UD
+- Balanced coverage of morphological paradigms
+- Native-speaker validation of ChatGPT outputs
+
+### 1.2 Annotation Philosophy
+
+**Descriptive Standard Language:**
+- We annotate the **standard literary variety** of Eastern Armenian and Modern Standard Greek as documented in authoritative reference grammars and dictionaries
+- This represents educated contemporary usage, not prescriptive ideals or archaic norms
+- Colloquial variants that deviate from the standard should be flagged but not used as citation forms
+- When legitimate grammatical variation exists (e.g., optional case marking, alternative paradigms), choose the analysis best supported by contemporary reference works
+
+**Rationale:** Standard varieties ensure cross-annotator consistency and provide stable targets for computational modeling, while remaining grounded in authentic language use.
+
+**Completeness:**
+- Every field must have a value: use `null` for genuinely inapplicable categories (e.g., person on infinitives), `false` for binary absent features, or empty string `""` for optional free-text fields
+- Missing or inconsistent data degrades the quality of morphological supervision for neural models
+- If uncertain, mark the most likely value and flag for team review
+
+**Consistency:**
+- Use only the controlled vocabularies defined in Appendix A
+- Apply uniform criteria across morphologically similar forms
+- Document systematic exceptions in Section 7 (Common Pitfalls)
+
+---
+
+## 2. General Principles
+
+### 2.1 Sentence Context
+
+**Requirement:** Every annotated token must appear in a **grammatically well-formed, pragmatically natural sentence** that provides sufficient context for morphological disambiguation.
+
+**Quality criteria:**
+
+1. **Grammaticality:** 
+   - ✓ Follows standard language syntax and morphology
+   - ✓ Would be accepted by native speakers as well-formed
+   - ✗ Avoid ungrammatical or telegraphic constructions
+
+2. **Naturalness:**
+   - ✓ Could plausibly occur in real discourse (written or spoken)
+   - ✓ Uses authentic collocations and constructions
+   - ✗ Avoid artificially constructed or stilted phrasing
+
+3. **Contextual adequacy:**
+   - ✓ **Disambiguates** the target form morphologically
+   - ✓ Provides semantic/pragmatic cues that constrain interpretation
+   - ✗ Avoid minimal or stripped contexts that leave features underspecified
+
+**Disambiguation examples:**
+
+**Armenian case disambiguation:**
+```
+// ✗ BAD: Ambiguous context (list without syntax)
+{"sentence": "Գիրք, գրիչ, տետր։", "noun": "գիրք", "case": "nominative"}
+
+// ✓ GOOD: Syntactic position clarifies case
+{"sentence": "Գիրքը սեղանի վրա է։", "noun": "գիրքը", "case": "nominative"}
+// (subject position → nominative unambiguous)
+```
+
+**Greek aspect disambiguation:**
+```
+// ✗ BAD: Aspect not constrained by context
+{"sentence": "Τρέχω.", "aspect": "Imp"}
+
+// ✓ GOOD: Temporal adverbial constrains aspect
+{"sentence": "Τρέχω κάθε πρωί.", "aspect": "Imp"}
+// ("every morning" → habitual, hence imperfective)
+```
+
+**Pragmatic naturalness:**
+
+Sentences should reflect **authentic language use**, not artificial examples crafted solely for annotation.
+
+```
+// ✗ STILTED: No pragmatic context
+{"sentence": "Ο άνθρωπος περπατά.", ...}
+
+// ✓ NATURAL: Realistic discourse context
+{"sentence": "Ο άνθρωπος περπατούσε αργά στο δρόμο.", ...}
+```
+
+**Form-sentence consistency:**
+
+Critical check: **Does the target form appear EXACTLY as annotated in the sentence?**
+
+```
+// ✗ WRONG: Form mismatch
+{
+  "sentence": "Գրիչը կարմիր է։",  // contains գրիչը (nominative+definite)
+  "noun": "գրիչի",               // but annotating genitive form!
+  "case": "genitive"
+}
+
+// ✓ CORRECT: Forms match
+{
+  "sentence": "Գրիչի գույնը կարմիր է։",  // contains գրիչի
+  "noun": "գրիչի",                      // annotating correct form
+  "case": "genitive"
+}
+```
+
+**Translation accuracy:**
+
+Translations must:
+- Preserve morphological information (case, number, tense, aspect where English allows)
+- Reflect sentence-level meaning, not just word-by-word glosses
+- Use natural English equivalents
+
+```
+// ✗ OVERLY LITERAL
+{"translation": "Of-the-room door-the is open.", ...}
+
+// ✓ NATURAL ENGLISH
+{"translation": "The room's door is open.", ...}
+```
+
+### 2.2 Lemmatization Standards
+
+**Armenian:**
+- Use the **dictionary citation form**: nominative singular for nouns, infinitive (if available) or 3sg present indicative for verbs
+- **Preserve full stem**: Do not truncate to accommodate stem allomorphy. Example: `բժիշկ` (doctor) not `բժշկ`, even though genitive is `բժշկի` with consonant deletion
+- Consult Arevelahayeren (Eastern Armenian) dictionaries for standard orthography
+- For borrowings, use the established Armenian orthographic form, not transliteration of the source language
+
+**Greek:**
+- **Nouns:** Nominative singular (e.g., `γιατρός`, `πατέρας`, `φως`)
+- **Verbs:** First person singular present active indicative (e.g., `αγαπώ`, `τρέχω`, `έρχομαι`)
+- Use **monotonic orthography** (single-accent system, standard since 1982)
+- For loanwords integrated into Greek morphology, use the adapted Greek form (e.g., `κομπιούτερ` not *computer*)
+
+**Lemmatization edge cases:**
+
+1. **Suppletive forms:** Use the citation form, not the actual root of the inflected form
+   - Greek: `πήγα` (I went) → lemma `πάω` (not *πηγαίνω, though that's also valid)
+   
+2. **Defective paradigms:** Use the attested citation form even if the paradigm is incomplete
+   - Some Greek nouns exist only in plural (πλουράλια τάντουμ)
+
+3. **Multiword expressions:** If the unit functions as a single lexical item, preserve spaces in the lemma
+   - Greek: `κινητό τηλέφωνο` (mobile phone) as a single lemma
+   - Armenian: `նամակ գրել` (to write a letter) if treated as phrasal verb
+
+### 2.3 Handling Morphological Ambiguity
+
+**Types of ambiguity:**
+
+1. **Syncretism:** Multiple grammatical categories share the same surface form
+   - Example: Greek -ος can be NOM.SG or GEN.PL (second declension)
+   - Example: Armenian -ն can be DEF.ART or DAT.SG marker
+
+2. **Neutralization:** Certain distinctions are not marked in particular contexts
+   - Example: Greek subjunctive doesn't distinguish all person forms in some verbs
+   - Example: Imperatives lack 1st/3rd person
+
+3. **Genuine indeterminacy:** Context allows multiple grammatically valid analyses
+   - Example: Isolated forms without syntactic context
+
+**Resolution strategies:**
+
+**Priority 1: Syntactic context**
+
+Use **syntactic position and agreement** to resolve ambiguity.
+
+```
+Greek example:
+"Το παιδί έτρεξε."
+
+Forms: έτρεξε could be:
+  (a) 3SG indicative aorist ("the child ran")
+  (b) 2SG imperative aorist ("run!" - to singular you)
+
+Resolution: Subject "Το παιδί" (3SG) triggers agreement
+→ Annotate as: {"person": 3, "number": "Sing", "mood": "Ind"}
+```
+
+**Priority 2: Semantic/pragmatic context**
+
+When syntax is insufficient, use **semantic plausibility** and **pragmatic coherence**.
+
+```
+Armenian example:
+"Գիրքը սեղանի վրա է։"
+
+Forms: սեղանի could be:
+  (a) Genitive ("table's" - possessive)
+  (b) Dative ("to/for the table")
+
+Resolution: Postposition "վրա" (on top of) selects genitive
+→ Annotate as: {"case": "genitive"}
+```
+
+**Priority 3: Canonical analysis**
+
+When multiple analyses are **equally valid grammatically and semantically**, choose the **analysis preferred in reference grammars**.
+
+```
+Greek example:
+Forms with optional aspect marking in certain constructions
+→ Follow Holton et al. (2004) or Klairis & Babiniotis (2005)
+```
+
+**Documentation requirement:**
+
+**If ambiguity remains after applying all resolution strategies:**
+
+1. Annotate with the **most likely analysis**
+2. Add a note field: `"note": "ambiguous: could also be [alternative analysis]"`
+3. Flag for team discussion in weekly review
+
+**Never leave fields blank due to uncertainty.** The goal is consistent decision-making, not absolute certainty.
+
+**Example with documented ambiguity:**
+
+```json
+{
+  "form": "έτρεξε",
+  "person": 3,
+  "number": "Sing",
+  "mood": "Ind",
+  "note": "Context-dependent: in isolation could be 2SG imperative, but subject agreement determines 3SG indicative here"
+}
+```
+
+**Systematic syncretism (don't over-note):**
+
+Do NOT flag predictable, systematic syncretism (e.g., all Greek neuters have identical NOM/ACC forms). Only flag genuine analytical ambiguity where annotator judgment was required.
+
+### 2.4 Unicode and Encoding
+
+- Use **NFC normalization** (Canonical Decomposition followed by Canonical Composition)
+- Armenian: Unicode block U+0530–U+058F
+- Greek: Unicode block U+0370–U+03FF
+- Ensure proper handling of combining diacritics
+
+---
+
+## 3. Armenian Noun Annotation
+
+### 3.1 Schema
+
+```json
+{
+  "sentence": "string (required)",
+  "translation": "string (required)",
+  "noun_info": [
+    {
+      "noun": "string (surface form, required)",
+      "base_form": "string (dictionary lemma, required)",
+      "case": "nominative|genitive|dative|ablative|instrumental|locative",
+      "number": "singular|plural|collective|associative",
+      "possessed": "boolean",
+      "possessor": "1sg|2sg|3sg|1pl|2pl|3pl|null"
+    }
+  ]
+}
+```
+
+### 3.2 Field Definitions
+
+#### 3.2.1 Case
+
+**Values:**
+- `nominative`: Grammatical subject, predicate nominal, citation form
+- `genitive`: Adnominal possessor, partitive, complement of certain postpositions
+- `dative`: Indirect object, goal/recipient, experiencer (with some predicates)
+- `ablative`: Source, point of origin, standard of comparison, separation
+- `instrumental`: Instrument, means, manner, comitative (accompaniment)
+- `locative`: Static location, temporal expressions ("in/at X")
+
+**Functional note:** Armenian cases have both **grammatical** (e.g., marking syntactic roles) and **semantic** (e.g., spatial/temporal) functions. When ambiguous, prioritize the morphological form over the semantic interpretation.
+
+**Critical rule for possession:** 
+
+**Any genitive NP functioning as a possessor triggers `possessed=true` on the possessum (the possessed noun).**
+
+This includes:
+- Adnominal genitives: *սենյակի դուռը* "the room's door" 
+- Genitives with possessive pronouns: *իմ գրքի էջերը* "my book's pages"
+- Definite genitives: *ուսուցչի գրիչը* "the teacher's pen"
+
+**Examples:**
+
+| Armenian | Gloss | Case | Function | Possessed | Possessor |
+|----------|-------|------|----------|-----------|-----------|
+| սենյակի դուռը | room-GEN door-DEF | genitive | possessor | `true` | `3sg` |
+| գրիչի գույնը | pen-GEN color-DEF | genitive | possessor | `true` | `3sg` |
+| քաղաքից եկավ | city-ABL came | ablative | source | `false` | `null` |
+| գրքում կարդացի | book-LOC read.1SG | locative | location | `false` | `null` |
+
+**Common error:**
+```json
+// ✗ WRONG: Genitive possessor not marked as possessed
+{"noun": "սենյակի", "case": "genitive", "possessed": false}
+
+// ✓ CORRECT: Genitive possessor explicitly marked
+{"noun": "սենյակի", "case": "genitive", "possessed": true, "possessor": "3sg"}
+```
+
+**Special case - bare genitives in compounds:**
+When a genitive appears in a frozen compound and no longer expresses possession synchronically, mark `possessed=false`:
+```json
+// Արևելյան (Eastern, lit. "of the East") in compound *Արևելյան Հայաստան*
+// If treated as lexicalized: possessed=false
+```
+
+#### 3.2.2 Number
+
+**Values:**
+- `singular`: One entity (semantic or grammatical)
+- `plural`: Multiple discrete entities (count plural)
+- `collective`: Group conceptualized as single unit (e.g., `մարդկություն` "humanity", `ժողովուրդ` "people/nation")
+- `associative`: Referent + associates, marked with suffix `-ունք/-եանք` (e.g., `Վարդանունք` "Vardan and his companions")
+
+**Linguistic note:** Armenian number marking is **obligatory** on nouns and shows **agreement** with modifiers and predicates. Collective nouns take singular agreement despite denoting groups.
+
+**Examples:**
+```
+singular: գիրք (book), մարդ (person)
+plural: գրքեր (books), մարդիկ (people)
+collective: մարդկություն (humanity, takes singular agreement)
+associative: Վարդանունք (Vardan + group, historical/archaic)
+```
+
+**Edge case - mass nouns:**
+Mass/substance nouns (e.g., *ջուր* "water", *հաց* "bread") are morphologically singular. Mark as `singular` even when denoting uncountable quantity.
+
+#### 3.2.3 Possessed & Possessor
+
+**Linguistic background:**
+Armenian marks possession through:
+1. **Definite article** `-ը/-ն` (= 3rd person possessor)
+2. **Possessive suffixes** (e.g., `-իս` "my", `-դ` "your-sg", `-ի` "his/her/its")
+3. **Genitive NP** + possessive marking on possessum
+
+**Field definitions:**
+
+**`possessed`:** Boolean indicating whether the noun carries possessive morphology (article or suffix)
+
+**`possessor`:** Person/number features of the possessor (not the possessed noun itself)
+
+**Critical agreement rule:**
+
+**Possessor features must match the POSSESSOR NP, not the grammatical features of the possessed head noun.**
+
+**Examples:**
+
+| Construction | Possessed noun | Possessor NP | Correct annotation |
+|--------------|----------------|--------------|-------------------|
+| Մարդկանց վստահությունը | վստահությունը<br>(trust-DEF, **singular**) | Մարդկանց<br>(people-GEN, **plural**) | `possessed: true`<br>`possessor: "3pl"` |
+| Երեխաների խաղալիքները | խաղալիքները<br>(toys-DEF, **plural**) | Երեխաների<br>(children-GEN, **plural**) | `possessed: true`<br>`possessor: "3pl"` |
+| Հայրիկիս գրիչը | գրիչը<br>(pen-DEF, **singular**) | իմ (my, implicit)<br>(**1sg**) | `possessed: true`<br>`possessor: "1sg"` |
+| Իմ գիրքը | գիրքը<br>(book-DEF, **singular**) | իմ (my)<br>(**1sg**) | `possessed: true`<br>`possessor: "1sg"` |
+
+**Common error:**
+```json
+// ✗ WRONG: Possessor matches head noun number (singular), ignoring plural possessor NP
+{"noun": "վստահությունը", "number": "singular", 
+ "possessed": true, "possessor": "3sg"}
+
+// ✓ CORRECT: Possessor reflects possessor NP (Մարդկանց = plural)
+{"noun": "վստահությունը", "number": "singular",
+ "possessed": true, "possessor": "3pl"}
+```
+
+**Definite article as possessor:**
+
+The definite article `-ը/-ն` **obligatorily signals possession** in Armenian. It is not merely a definiteness marker (unlike Greek or Romance articles).
+
+```json
+// գիրքը can mean:
+// (a) "the book" (= his/her/its/their book)
+// (b) "his/her book" (context-dependent)
+// Always mark: possessed=true, possessor="3sg"
+
+{"noun": "գիրքը", "possessed": true, "possessor": "3sg"}
+```
+
+**Implicit possessors:**
+
+When possessor is encoded by suffix (not separate NP), mark explicitly:
+
+```json
+// հայրիկիս = հայրիկ + իս (father + my)
+{"noun": "հայրիկիս", "possessed": true, "possessor": "1sg"}
+
+// տունդ = տուն + դ (house + your-sg)
+{"noun": "տունդ", "possessed": true, "possessor": "2sg"}
+```
+
+**Non-possessed nouns:**
+
+Bare nouns without article or possessive suffix:
+```json
+{"noun": "գիրք", "possessed": false, "possessor": null}
+{"noun": "քաղաք", "possessed": false, "possessor": null}
+```
+
+### 3.3 Quality Checklist
+
+For each noun annotation:
+- [ ] `base_form` is the full dictionary citation form (not truncated)
+- [ ] Genitive possessors have `possessed=true`
+- [ ] `possessor` person/number matches the possessor NP (not the head)
+- [ ] Definite `-ը/-ն` nouns are marked `possessed=true, possessor="3sg"`
+- [ ] Sentence context justifies the case assignment
+- [ ] Translation accurately reflects possession structure
+
+---
+
+## 4. Greek Noun Annotation
+
+### 4.1 Schema
+
+```json
+{
+  "sentence": "string (required)",
+  "translation": "string (required)",
+  "noun_info": {
+    "form": "string (surface form)",
+    "lemma": "string (nominative singular)",
+    "gender": "Masc|Fem|Neut",
+    "number": "Sing|Plur",
+    "case": "Nom|Gen|Acc|Voc",
+    "definiteness": "Def|Indef",
+    "declension_class": "first|second|third|irregular",
+    "irregular": "true|false",
+    "stem": "string",
+    "root_alternation": "string or empty",
+    "compound": "true|false",
+    "animacy": "Animate|Inanimate"
+  }
+}
+```
+
+### 4.2 Field Definitions
+
+#### 4.2.1 Declension Class
+
+**Linguistic background:**
+Modern Greek nominal declension is traditionally analyzed into three main classes based on nominative singular endings and inflectional patterns. This classification differs from Ancient Greek paradigms.
+
+**Class definitions:**
+
+| Class | Characteristic | Typical nominative endings | Examples |
+|-------|---------------|---------------------------|----------|
+| `first` | Vowel stems (historical α-stems) | -α, -η (mostly Fem); -ας, -ης (Masc) | μητέρα, γλώσσα, ιδέα, ταμίας |
+| `second` | Thematic vowel -ο- | -ος (Masc/Fem), -ο/-ι (Neut) | άνθρωπος, οδός, δώρο, παιδί |
+| `third` | Consonant/irregular stems | -ας, -ης (Masc imparisyllabics), consonant stems (Neut) | πατέρας, γιατρός, φως, γάλα |
+
+**Imparisyllabic note:** Third declension includes many nouns where stem vowel appears in oblique cases but not nominative (e.g., `πατέρας` → `πατέρ-α` gen.sg., with `-α` from stem, not ending).
+
+**Critical principles:**
+
+1. **Use Modern Greek analysis, not Ancient Greek categories**
+   - Modern `third` ≠ Ancient 3rd declension
+   - Many Ancient 3rd → Modern 1st (e.g., πόλις → πόλη)
+
+2. **Regularity vs. irregularity:**
+   - A noun is `irregular` only if it shows **unpredictable stem alternations** or **defective paradigms**
+   - Predictable imparisyllabic patterns (πατέρας-type) are **regular third declension**
+
+3. **Common regular forms often mislabeled as irregular:**
+
+```json
+// ✓ CORRECT (regular third declension)
+{"lemma": "πατέρας", "declension_class": "third", "irregular": "false"}
+{"lemma": "γιατρός", "declension_class": "third", "irregular": "false"}
+{"lemma": "καφές", "declension_class": "third", "irregular": "false"}
+
+// ✗ WRONG (over-marking irregular)
+{"lemma": "πατέρας", "declension_class": "irregular", "irregular": "true"}
+```
+
+**True irregular examples:**
+```json
+// Suppletive or defective
+{"lemma": "νερό", "declension_class": "irregular", "irregular": "true"}  
+// (if gen.pl. is considered non-productive)
+
+{"lemma": "γάλα", "declension_class": "irregular", "irregular": "true"}  
+// (consonant neuter with irregular oblique stem γάλακτ-)
+```
+
+**Borderline cases:**
+- Nouns with optional paradigms (e.g., borrowings with competing inflection): mark as `irregular` and note the variation
+- Indeclinable nouns (e.g., recent borrowings like *μενού*): mark `irregular` and note "indeclinable"
+
+#### 4.2.2 Stem
+
+**Rules:**
+- Extract from **nominative singular**, not plural
+- **No multiword stems:** If lemma is multiword, leave `stem` empty
+- **No over-truncation:** Keep enough of the base to be recognizable
+
+**Examples:**
+
+| Lemma | Correct stem | Incorrect stems |
+|-------|-------------|-----------------|
+| πείραμα | πειραματ- | ~~πειράματ-~~, ~~πειραμάτ-~~ |
+| ενδιαφέρον | ενδιαφέρ- | ~~ενδιαφεροντ-~~ |
+| κινητό τηλέφωνο | *(leave empty)* | ~~κινητοτηλεφων-~~ |
+| αποτέλεσμα | αποτελεσματ- | ~~αποτελέσματ-~~ |
+
+#### 4.2.3 Definiteness
+
+**Definition:** Presence of definite article (ο, η, το and their inflected forms)
+
+```
+Def: ο άνθρωπος, την πόρτα
+Indef: άνθρωπος, πόρτα
+```
+
+**Special case - Vocative:**
+- Vocatives **without** article → `Indef`
+- Vocatives **with** article (rare, emphatic) → `Def`
+
+```json
+// Standard vocative (no article)
+{"form": "πατέρα", "case": "Voc", "definiteness": "Indef"}
+
+// Emphatic vocative with article
+{"form": "ο πατέρα", "case": "Voc", "definiteness": "Def"}
+```
+
+#### 4.2.4 Compound
+
+**Definition:** A **morphological compound** is a lexeme formed by combining two or more independent lexical roots into a single word, where both elements retain identifiable semantic content.
+
+**Criteria for identifying compounds:**
+
+1. **Synchronic transparency:** Native speakers recognize both component parts
+2. **Lexical independence:** Both parts can stand alone as words (or one is a bound form with clear lexical meaning, like τηλε-)
+3. **Morphological unity:** The compound inflects as a single unit
+
+**True compounds:**
+
+| Compound | Component 1 | Component 2 | Category |
+|----------|------------|-------------|----------|
+| αεροπλάνο | αέρας (air) | πλάνος (wandering) | N + N |
+| τηλεόραση | τηλε- (far) | όραση (vision) | Prefix + N |
+| οδοντόβουρτσα | οδόντι (tooth) | βούρτσα (brush) | N + N |
+| ανθρωπο-κτονία | άνθρωπος (human) | κτονία (killing) | N + N |
+
+```json
+{"lemma": "αεροπλάνο", "compound": "true"}
+{"lemma": "τηλεόραση", "compound": "true"}
+```
+
+**NOT compounds:**
+
+1. **Derivations with grammatical prefixes:**
+   - συμμετοχή (συν- is derivational prefix, not independent word)
+   - αποτέλεσμα (από- + τέλος, but από- here is prefix)
+   
+2. **Simple prefixed words:**
+   - ξαναγράφω (ξανά + γράφω = write again) → arguably compound, but treat as derivation if ξανά- is fully grammaticalized
+
+3. **Phrases that are not lexicalized:**
+   - κινητό τηλέφωνο (mobile phone) → **IS a compound** (lexicalized as single concept)
+   - μεγάλο σπίτι (big house) → NOT a compound (free phrase)
+
+**Annotation test:**
+- Can you identify **two lexical roots** that combine?
+- Is the combination **lexicalized** (listed in dictionaries as single entry)?
+- If YES to both → `compound: true`
+
+**Edge cases:**
+
+**Multiword lexemes:**
+- Compounds can be orthographically separated but morphologically/semantically unified
+- Example: `κινητό τηλέφωνο` (mobile phone)
+  - Both words inflect for case: `κινητό τηλέφωνο` (NOM) → `κινητού τηλεφώνου` (GEN)
+  - But semantically/lexically a single concept
+  - Mark as `compound: true`
+
+**Loanword compounds:**
+- Greek may borrow entire compounds from other languages (e.g., `μπέιμπι-σίτερ`)
+- If both parts are identifiable: `compound: true`
+- If opaque: `compound: false`
+
+**Annotation examples:**
+
+```json
+// ✓ True N+N compound
+{"lemma": "αεροπλάνο", "compound": "true"}
+
+// ✓ Prefix + N compound (τηλε- is productive bound morpheme)
+{"lemma": "τηλεόραση", "compound": "true"}
+
+// ✗ Derivation, not compound (συν- is grammatical prefix)
+{"lemma": "συμμετοχή", "compound": "false"}
+
+// ✗ Single morpheme + derivational suffix
+{"lemma": "αγάπη", "compound": "false"}  // (αγαπ- stem + -η suffix)
+
+// ✓ Lexicalized multiword compound
+{"lemma": "κινητό τηλέφωνο", "compound": "true"}
+```
+
+#### 4.2.5 Root Alternation
+
+**Definition:** Systematic phonological changes in the root/stem across paradigm
+
+**Mark when present:**
+```json
+{"lemma": "άνθρωπος", "root_alternation": "ανθρωπ-/ανθρώπ-"}
+{"lemma": "φως", "root_alternation": "φως-/φωτ-"}
+```
+
+**Leave empty if no alternation:**
+```json
+{"lemma": "τραπέζι", "root_alternation": ""}
+```
+
+### 4.3 Quality Checklist
+
+For each Greek noun:
+- [ ] `declension_class` reflects Modern Greek system (not Ancient)
+- [ ] `irregular` is `true` only for genuinely unpredictable forms
+- [ ] `stem` extracted from nominative singular (not plural)
+- [ ] Multiword lemmas have empty `stem` field
+- [ ] `compound` is `true` only if two independent words combine
+- [ ] Vocatives have correct `definiteness` based on article presence
+- [ ] `animacy` reflects semantic category (human/animal vs. abstract/concrete)
+
+---
+
+## 5. Greek Verb Annotation
+
+### 5.1 Schema
+
+```json
+{
+  "sentence": "string",
+  "translation": "string",
+  "form": "string (inflected form)",
+  "lemma": "string (1sg present active)",
+  "person": 1|2|3|null,
+  "number": "Sing|Plur|null",
+  "tense": "Past|Pres|Fut",
+  "aspect": "Perf|Imp",
+  "mood": "Ind|Sub|Imp",
+  "voice": "Act|Pass|Mid",
+  "conjugation_class": "-ώ|-ω|-ομαι|-ίζω|...",
+  "irregular": "True|False",
+  "stem": "string",
+  "root_alternation": "string or 'none'",
+  "auxiliary": "True|False",
+  "polarity": "Pos|Neg",
+  "diathesis": "Active|Passive|Middle|Neutral"
+}
+```
+
+### 5.2 Field Definitions
+
+#### 5.2.1 Conjugation Class
+
+**Modern Greek standard classification (Type A / Type B):**
+
+| Class | Pattern | Examples |
+|-------|---------|----------|
+| `-ω` | Type A (stress on ending) | θέλω, τρέχω, βλέπω |
+| `-ώ` | Type B (stress penultimate) | αγαπώ, μιλώ, ρωτώ |
+| `-ομαι` | Deponent (always mid/pass) | έρχομαι, φοβάμαι |
+| `-ίζω` | -ιζ verbs | οργανίζω, ενδιαφέρομαι |
+
+**Critical distinction:**
+- Type A `-ω`: Stress falls on the ending in present (θέλω → θέλεις → θέλει)
+- Type B `-ώ`: Stress remains penultimate (αγαπώ → αγαπάς → αγαπά)
+
+**Examples:**
+```json
+{"lemma": "θέλω", "conjugation_class": "-ω"}
+{"lemma": "αγαπώ", "conjugation_class": "-ώ"}
+{"lemma": "έρχομαι", "conjugation_class": "-ομαι"}
+```
+
+#### 5.2.2 Voice vs. Diathesis
+
+**Linguistic distinction:**
+
+This annotation separates **morphological form** (voice) from **semantic/syntactic function** (diathesis), following contemporary Greek linguistic analysis.
+
+**Voice (morphological marking):**
+- Describes the **formal paradigm** the verb belongs to
+- Based on inflectional morphology, independent of argument structure
+
+**Diathesis (semantic valency):**
+- Describes the **mapping between semantic roles and syntactic positions**
+- Reflects whether the subject is agent, patient, experiencer, or theme
+
+**Values:**
+
+| Voice | Definition | Morphological markers | Examples |
+|-------|------------|----------------------|----------|
+| `Act` | Active morphology | No mediopassive markers | αγαπώ, τρέχω, θέλω |
+| `Pass` | Mediopassive morphology | -μαι, -μουν, -θηκα, -τηκα | αγαπιέμαι, τρέχομαι, έρχομαι |
+| `Mid` | Middle morphology | (rare in Modern Greek; archaic -μην) | (mostly extinct) |
+
+| Diathesis | Definition | Subject role | Examples |
+|-----------|------------|--------------|----------|
+| `Active` | Agent → Patient/Theme | Agent (volitional actor) | αγαπώ (I love), διαβάζω (I read) |
+| `Passive` | Patient/Theme affected by Agent | Patient (affected entity) | αγαπιέμαι (I am loved), χτυπιέμαι (I am hit) |
+| `Middle` | Agent acts on/for self | Agent = Patient (reflexive/benefactive) | πλένομαι (I wash myself), ντύνομαι (I dress myself) |
+| `Neutral` | No Agent-Patient relation | Experiencer/Theme (intransitive) | έρχομαι (I come), κοιμάμαι (I sleep) |
+
+**Key insight:** **Voice ≠ Diathesis**
+
+Many verbs have **passive morphology** (voice) but **non-passive function** (diathesis). These are **deponent verbs**.
+
+**Deponent verbs:**
+Verbs that are **always or typically in mediopassive form** but express **active or neutral meaning**.
+
+**Examples:**
+
+| Verb | Morphology (Voice) | Function (Diathesis) | Explanation |
+|------|-------------------|---------------------|-------------|
+| έρχομαι | Mediopassive (`Pass`) | Intransitive motion (`Neutral`) | "I come" — no agent/patient |
+| φοβάμαι | Mediopassive (`Pass`) | Experiencer (`Active`) | "I fear" — subject is experiencer |
+| κοιμάμαι | Mediopassive (`Pass`) | Self-directed action (`Neutral`) | "I sleep" — intransitive |
+| σκέφτομαι | Mediopassive (`Pass`) | Mental activity (`Active`) | "I think" — subject is thinker |
+| αγαπιέμαι | Mediopassive (`Pass`) | Affected patient (`Passive`) | "I am loved" — true passive |
+
+**Annotation strategy:**
+
+1. **Voice:** Look at the morphological form
+   - Active endings (-ω, -εις, -ει) → `Act`
+   - Mediopassive endings (-μαι, -σαι, -ται) → `Pass`
+
+2. **Diathesis:** Analyze the semantic structure
+   - Subject = Agent acting on object → `Active`
+   - Subject = Patient affected by agent → `Passive`
+   - Subject = Agent acting on/for self → `Middle`
+   - Subject = Experiencer/Theme (no patient) → `Neutral`
+
+**Test for diathesis:**
+- **Active:** Can you add "by X" agent? → Passive diathesis
+  - αγαπιέμαι από τη μητέρα μου "I am loved by my mother"
+- **Middle:** Is action reflexive or self-beneficial?
+  - πλένομαι = "I wash myself" (not *"I am washed by someone")
+- **Neutral:** Intransitive with no clear agent/patient?
+  - έρχομαι = "I come" (motion, no patient)
+
+**Common pairs:**
+
+| Active form | Mediopassive form | Active diathesis | Passive diathesis |
+|------------|------------------|------------------|------------------|
+| αγαπώ | αγαπιέμαι | I love [someone] | I am loved [by someone] |
+| χτυπώ | χτυπιέμαι | I hit [someone] | I am hit [by someone] |
+| πλένω | πλένομαι | I wash [something] | I wash myself (middle) |
+
+**Tricky case - anticausatives:**
+
+Some mediopassive verbs express **spontaneous events** (anticausatives):
+```json
+// Σπάζω το ποτήρι = "I break the glass" (active, transitive)
+// Το ποτήρι σπάζεται = "The glass breaks" (mediopassive, anticausative)
+// → voice: Pass, diathesis: Neutral (spontaneous event, no external agent)
+```
+
+**Annotation examples:**
+
+```json
+// ✓ Deponent verb - neutral diathesis
+{"lemma": "έρχομαι", "voice": "Pass", "diathesis": "Neutral"}
+
+// ✓ Deponent verb - active diathesis (experiencer subject)
+{"lemma": "φοβάμαι", "voice": "Pass", "diathesis": "Active"}
+
+// ✓ True passive
+{"lemma": "αγαπιέμαι", "voice": "Pass", "diathesis": "Passive"}
+
+// ✓ Middle (reflexive)
+{"lemma": "πλένομαι", "voice": "Pass", "diathesis": "Middle"}
+
+// ✓ Standard active transitive
+{"lemma": "αγαπώ", "voice": "Act", "diathesis": "Active"}
+
+// ✗ WRONG: Conflating voice and diathesis
+{"lemma": "έρχομαι", "voice": "Act", "diathesis": "Active"}  // Incorrect voice!
+```
+
+#### 5.2.3 Aspect & Mood Interaction
+
+**Aspect in Modern Greek:**
+
+Greek has **grammaticalized aspect** contrasting perfective vs. imperfective viewpoint. This is distinct from lexical aspect (Aktionsart).
+
+| Aspect | Definition | Typical uses |
+|--------|------------|-------------|
+| `Perf` | **Perfective:** Event viewed as complete whole, bounded | Aorist past, perfective future, perfective subjunctive |
+| `Imp` | **Imperfective:** Event viewed as ongoing, unbounded, habitual | Imperfect past, present, imperfective future, imperfective subjunctive |
+
+**Aspect is morphologically marked on verbs in most contexts (past, subjunctive, imperative).**
+
+**Tense-Aspect combinations:**
+
+| Tense | Aspect | Greek name | Example (αγαπώ) | Translation |
+|-------|--------|------------|----------------|-------------|
+| `Pres` | `Imp` | Ενεστώτας | αγαπώ | I love (ongoing/habitual) |
+| `Past` | `Imp` | Παρατατικός | αγαπούσα | I was loving / I used to love |
+| `Past` | `Perf` | Αόριστος | αγάπησα | I loved (completed) |
+| `Fut` | `Imp` | Εξακολουθητικός μέλλοντας | θα αγαπώ | I will be loving |
+| `Fut` | `Perf` | Στιγμιαίος μέλλοντας | θα αγαπήσω | I will love (punctual) |
+
+**Subjunctive (Υποτακτική):**
+
+Modern Greek subjunctive is formed with particle **να + verb** and is **obligatorily marked for aspect**:
+
+- **Imperfective subjunctive:** `να + present stem` → habitual, ongoing, general
+- **Perfective subjunctive:** `να + aorist stem` → single, completed event
+
+**Critical rule:** **Subjunctives always specify person and number** (unlike English or Romance subjunctives that may have syncretism).
+
+**Examples:**
+
+| Form | Mood | Aspect | Person | Number | Context |
+|------|------|--------|--------|--------|---------|
+| να αγαπώ | `Sub` | `Imp` | 1 | `Sing` | "that I (may) love (habitually)" |
+| να αγαπήσω | `Sub` | `Perf` | 1 | `Sing` | "that I (may) love (once)" |
+| να αγαπάς | `Sub` | `Imp` | 2 | `Sing` | "that you (may) love (generally)" |
+| να αγαπήσεις | `Sub` | `Perf` | 2 | `Sing` | "that you (may) love (once)" |
+
+**Aspectual contrast in subjunctive:**
+```
+Θέλω να σε αγαπώ πάντα.
+"I want to love you always." (imperfective = durative/habitual)
+
+Θέλω να σε αγαπήσω.
+"I want to love you." (perfective = single act/event)
+```
+
+**Common annotation error:**
+```json
+// ✗ WRONG: Subjunctive without person/number
+{"form": "να τρέχω", "mood": "Sub", "aspect": "Imp", "person": null, "number": null}
+
+// ✓ CORRECT: Person and number explicitly marked
+{"form": "να τρέχω", "mood": "Sub", "aspect": "Imp", "person": 1, "number": "Sing"}
+```
+
+**Imperative aspect:**
+
+Imperatives also distinguish perfective vs. imperfective:
+
+| Form | Aspect | Pragmatic meaning |
+|------|--------|------------------|
+| τρέχε! | `Imp` | "be running / keep running" (durative) |
+| τρέξε! | `Perf` | "run! (and finish)" (punctual, completed) |
+
+**Non-finite forms:**
+
+Modern Greek has very limited non-finite morphology:
+
+1. **Participles:** Only perfective passive participles exist productively (e.g., γραμμένος "written")
+   ```json
+   {"form": "γραμμένος", "mood": null, "person": null, "number": null}
+   ```
+
+2. **Infinitives:** Extinct in Modern Greek (replaced by να + subjunctive)
+   - Do not annotate any form as "infinitive" in Modern Greek
+
+#### 5.2.4 Imperative
+
+**Rule:** Imperatives are **2nd person only** (singular or plural)
+
+```json
+// ✓ CORRECT
+{"form": "τρέξε", "mood": "Imp", "person": 2, "number": "Sing"}
+{"form": "τρέξτε", "mood": "Imp", "person": 2, "number": "Plur"}
+
+// ✗ WRONG: Imperative with 1st/3rd person
+{"mood": "Imp", "person": 3, ...}  // No such form exists
+```
+
+**Aspect in imperatives:**
+- Perfective: Completed action (τρέξε "run! [and finish]")
+- Imperfective: Ongoing/repeated (τρέχε "keep running")
+
+#### 5.2.5 Participles & Infinitives
+
+**Modern Greek:**
+- **Infinitives:** Essentially extinct (replaced by να + subjunctive)
+- **Participles:** Limited to perfect passive (e.g., γραμμένος "written")
+
+**For non-finite forms:**
+```json
+// Passive participle
+{"form": "γραμμένος", "person": null, "number": null, "mood": null}
+```
+
+#### 5.2.6 Polarity
+
+**Values:**
+- `Pos`: Affirmative (δεν is absent)
+- `Neg`: Negative (δεν, μην, μη present)
+
+**Important:** Mark polarity on the **verb**, not the clause
+
+```json
+// Clause: "Δεν τρέχω" (I don't run)
+{"form": "τρέχω", "polarity": "Neg"}  // δεν attaches to verb
+
+// Clause: "Τρέχω" (I run)
+{"form": "τρέχω", "polarity": "Pos"}
+```
+
+### 5.3 Quality Checklist
+
+For each Greek verb:
+- [ ] `conjugation_class` distinguishes Type A `-ω` vs Type B `-ώ`
+- [ ] `voice` reflects morphology, `diathesis` reflects semantics
+- [ ] Deponent verbs have `voice=Pass` but `diathesis=Active/Neutral`
+- [ ] Subjunctives have both `aspect` and `person`/`number` marked
+- [ ] Imperatives are 2nd person only
+- [ ] Non-finite forms have `null` for person/number/mood
+- [ ] `polarity` marked on verb (not clause-level)
+
+---
+
+## 6. Quality Control Procedures
+
+### 6.1 Three-Pass Review
+
+**Pass 1: Structural validation**
+- All required fields present
+- Values from controlled vocabulary
+- No placeholder text (e.g., "TODO", "???")
+
+**Pass 2: Linguistic validation**
+- Base forms match dictionary citations
+- Morphological features consistent with surface form
+- Sentence context supports annotations
+
+**Pass 3: Cross-consistency**
+- Similar forms annotated consistently
+- Paradigm gaps identified and documented
+- Edge cases flagged for discussion
+
+### 6.2 Inter-Annotator Agreement
+
+**For collaborative annotation:**
+1. Each annotator independently annotates a 10% sample
+2. Calculate Cohen's κ per categorical field
+3. Discuss disagreements and refine guidelines
+4. Target: κ ≥ 0.80 for all fields
+
+**Fields prone to disagreement:**
+- Possession (Armenian)
+- Declension class (Greek)
+- Diathesis vs. voice (Greek verbs)
+- Irregular marking
+
+### 6.3 Validation Scripts
+
+**Automated checks to run before finalizing:**
+
+```python
+# Pseudo-code for validation
+def validate_entry(entry):
+    # Required fields present
+    assert all(field in entry for field in REQUIRED_FIELDS)
+    
+    # Vocabulary constraints
+    assert entry['case'] in ALLOWED_CASES
+    
+    # Logical constraints
+    if entry['language'] == 'Armenian':
+        if entry['case'] == 'genitive' and is_possessor(entry['sentence']):
+            assert entry['possessed'] == True
+    
+    if entry['language'] == 'Greek' and entry['POS'] == 'verb':
+        if entry['mood'] == 'Imp':
+            assert entry['person'] == 2
+```
+
+---
+
+## 7. Common Pitfalls and Solutions
+
+### 7.1 Armenian-Specific
+
+| Pitfall | Wrong | Correct |
+|---------|-------|---------|
+| Truncated lemmas | `բժշկ` | `բժիշկ` |
+| Unmarked genitive possession | `{"case": "genitive", "possessed": false}` | `{"case": "genitive", "possessed": true, "possessor": "3sg"}` |
+| Possessor mismatch | Մարդկանց վստահությունը → `possessor: "3sg"` | `possessor: "3pl"` |
+| Missing definite possession | `գիրքը` → `possessed: false` | `possessed: true, possessor: "3sg"` |
+
+### 7.2 Greek Noun-Specific
+
+| Pitfall | Wrong | Correct |
+|---------|-------|---------|
+| Ancient declensions | `"third_ancient"` | `"third"` (Modern system) |
+| Over-marking irregular | πατέρας → `irregular: true` | `irregular: false` |
+| Plural-based stems | πείραμα → `πειράματ-` | `πειραματ-` (from singular) |
+| False compounds | συμμετοχή → `compound: true` | `compound: false` |
+| Multiword stems | κινητό τηλέφωνο → `κινητοτηλεφων-` | *(empty string)* |
+
+### 7.3 Greek Verb-Specific
+
+| Pitfall | Wrong | Correct |
+|---------|-------|---------|
+| Missing subjunctive features | `να τρέχω` → `person: null` | `person: 1, number: "Sing"` |
+| Confusing voice & diathesis | έρχομαι → `voice: Act` | `voice: Pass, diathesis: Neutral` |
+| Wrong conjugation class | θέλω → `-ώ` | `-ω` |
+| Non-existent imperative | `mood: Imp, person: 3` | Imperatives are 2nd person only |
+
+---
+
+## 8. Annotation Workflow
+
+### 8.1 Initial Annotation
+
+1. **Load ChatGPT output** in annotation interface
+2. **Read sentence + translation** to understand context
+3. **Verify surface form** appears in sentence as specified
+4. **Check base_form** against dictionary
+5. **Validate each morphological feature** using this guide
+6. **Flag uncertainties** for team discussion
+7. **Save and move to next entry**
+
+### 8.2 Team Discussion
+
+**Weekly meetings:**
+- Review flagged entries
+- Resolve systematic ambiguities
+- Update guidelines as needed
+- Track agreement statistics
+
+### 8.3 Final Quality Pass
+
+**Before dataset release:**
+1. Run automated validation scripts
+2. Sample 5% for manual deep review
+3. Check cross-paradigm consistency
+4. Verify translations match annotations
+5. Generate statistics report
+6. Document known limitations
+
+---
+
+## 9. References
+
+### Armenian Resources
+- Eastern Armenian dictionaries (e.g., Arevelahayeren Bargirk)
+- Dum-Tragut, J. (2009). *Armenian: Modern Eastern Armenian*
+- Universal Dependencies documentation
+
+### Greek Resources
+- Holton, D., Mackridge, P., & Philippaki-Warburton, I. (2004). *Greek: A Comprehensive Grammar*
+- Klairis, C. & Babiniotis, G. (2005). *Γραμματική της Νέας Ελληνικής*
+- Universal Dependencies Greek guidelines
+- GR-NLP-TOOLKIT documentation
+
+### Technical References
+- Universal Dependencies feature inventory: https://universaldependencies.org/u/feat/
+- UniMorph schema: https://unimorph.github.io/
+
+---
+
+## 10. Contact & Updates
+
+**Questions or edge cases not covered?**
+- Email: avetisyan@dzhw.eu
+- Regularly update this document based on team discussions
+- Version control: Track changes in guidelines.md changelog
+
+**Changelog:**
+- v2.0 (Feb 2026): Comprehensive guidelines for MorphCraft paper
+- v1.0 (2025): Initial VerbCraft guidelines (Armenian verbs only)
+
+---
+
+## Appendix A: Controlled Vocabularies
+
+### Armenian Nouns
+```
+case: nominative, genitive, dative, ablative, instrumental, locative
+number: singular, plural, collective, associative
+possessed: true, false
+possessor: 1sg, 2sg, 3sg, 1pl, 2pl, 3pl, null
+```
+
+### Greek Nouns
+```
+gender: Masc, Fem, Neut
+number: Sing, Plur
+case: Nom, Gen, Acc, Voc
+definiteness: Def, Indef
+declension_class: first, second, third, irregular
+irregular: true, false
+compound: true, false
+animacy: Animate, Inanimate
+```
+
+### Greek Verbs
+```
+person: 1, 2, 3, null (for non-finite)
+number: Sing, Plur, null
+tense: Past, Pres, Fut
+aspect: Perf, Imp
+mood: Ind, Sub, Imp, null (for non-finite)
+voice: Act, Pass, Mid
+conjugation_class: -ώ, -ω, -ομαι, -ίζω, [others as needed]
+irregular: True, False
+auxiliary: True, False
+polarity: Pos, Neg
+diathesis: Active, Passive, Middle, Neutral
+```
+
+---
+
+**End of Guidelines**
