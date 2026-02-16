@@ -1054,11 +1054,9 @@ def validate_entry(entry):
 
 ### 8.2 Team Discussion
 
-**Weekly meetings:**
 - Review flagged entries
 - Resolve systematic ambiguities
 - Update guidelines as needed
-- Track agreement statistics
 
 ### 8.3 Final Quality Pass
 
@@ -1069,38 +1067,6 @@ def validate_entry(entry):
 4. Verify translations match annotations
 5. Generate statistics report
 6. Document known limitations
-
----
-
-## 9. References
-
-### Armenian Resources
-- Eastern Armenian dictionaries (e.g., Arevelahayeren Bargirk)
-- Dum-Tragut, J. (2009). *Armenian: Modern Eastern Armenian*
-- Universal Dependencies documentation
-
-### Greek Resources
-- Holton, D., Mackridge, P., & Philippaki-Warburton, I. (2004). *Greek: A Comprehensive Grammar*
-- Klairis, C. & Babiniotis, G. (2005). *Γραμματική της Νέας Ελληνικής*
-- Universal Dependencies Greek guidelines
-- GR-NLP-TOOLKIT documentation
-
-### Technical References
-- Universal Dependencies feature inventory: https://universaldependencies.org/u/feat/
-- UniMorph schema: https://unimorph.github.io/
-
----
-
-## 10. Contact & Updates
-
-**Questions or edge cases not covered?**
-- Email: avetisyan@dzhw.eu
-- Regularly update this document based on team discussions
-- Version control: Track changes in guidelines.md changelog
-
-**Changelog:**
-- v2.0 (Feb 2026): Comprehensive guidelines for MorphCraft paper
-- v1.0 (2025): Initial VerbCraft guidelines (Armenian verbs only)
 
 ---
 
