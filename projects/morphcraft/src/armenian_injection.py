@@ -31,8 +31,8 @@ RUN_UD_VERBS = True
 RUN_UD_TREEBANKS = ["ArmTDP", "BSUT"]
 
 # Set your AI JSON paths
-AI_ARMENIAN_NOUNS_JSON = "/content/armenian_nouns.json"
-AI_ARMENIAN_VERBS_JSON = "/content/Armenian_verbs.json"
+AI_ARMENIAN_NOUNS_JSON = "projects/morphcraft/datasets/armenian/armenian_nouns.json"
+AI_ARMENIAN_VERBS_JSON = "projects/morphcraft/datasets/armenian/armenian_verbs.json"
 
 LANG_CODE   = "hy_AM"
 MODEL_NAME  = "facebook/mbart-large-50"
