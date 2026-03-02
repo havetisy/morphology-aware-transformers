@@ -39,8 +39,8 @@ RUN_UD_VERBS  = True
 RUN_UD_TREEBANKS = ["GDT", "GUD"]   # any subset, e.g. ["GDT"]
 
 # AI JSON paths (set these)
-AI_GREEK_NOUNS_JSON = "/content/Greek nouns.json"
-AI_GREEK_VERBS_JSON = "/content/Greek verbs.json"
+AI_GREEK_NOUNS_JSON = "projects/morphcraft/datasets/greek/greek_nouns.json"
+AI_GREEK_VERBS_JSON = "projects/morphcraft/datasets/greek/greek_verbs.json"
 
 LANG_CODE   = "el_GR"
 MODEL_NAME  = "facebook/mbart-large-50"
